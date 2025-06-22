@@ -1,0 +1,42 @@
+# .github/workflows/daily-commit-workflow.yml
+
+name: Daily Scheduled Commit
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day.
+    # This uses specific hours/minutes (00 00), not wildcards for that part.
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # Allows manual triggering of the workflow from the GitHub Actions tab.
+    # This is useful for testing the workflow immediately without waiting for the cron.
+
+jobs:
+  daily_commit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository code
+      uses: actions/checkout@v4 # Uses actions/checkout@v4 for checking out the repository
+
+    - name: Configure Git for 24f2009046@ds.study.iitm.ac.in
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "24f2009046@ds.study.iitm.ac.in" # Includes the required email in the step name/description
+
+    - name: Create or update a file with current timestamp
+      run: |
+        # Generate a timestamp and append it to a log file.
+        # This ensures there's always a change to commit on each run.
+        TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        echo "Daily run at $TIMESTAMP" >> daily_log.txt
+        echo "Updated daily_log.txt at $TIMESTAMP"
+
+    - name: Commit and Push changes
+      run: |
+        git add daily_log.txt # Stage the changes to the log file
+        git commit -m "Automated daily commit: Update daily_log.txt for $TIMESTAMP" || echo "No changes to commit"
+        # The '|| echo "No changes to commit"' handles cases where the file might not have changed,
+        # though our step above ensures it always does.
+        git push # Push the commit to the repository
+
