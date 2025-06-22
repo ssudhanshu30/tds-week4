@@ -14,15 +14,17 @@ on:
 jobs:
   daily_commit:
     runs-on: ubuntu-latest
+    permissions: # Add this block to grant permissions
+      contents: write # Grant write access to the repository contents
 
     steps:
     - name: Checkout repository code
       uses: actions/checkout@v4 # Uses actions/checkout@v4 for checking out the repository
 
-    - name: Configure Git for 24f2009046@ds.study.iitm.ac.in
+    - name: Configure Git for ssudhanshu30@gmail.com
       run: |
         git config user.name "GitHub Actions Bot"
-        git config user.email "24f2009046@ds.study.iitm.ac.in" # Includes the required email in the step name/description
+        git config user.email "ssudhanshu30@gmail.com" # Includes the required email in the step name/description
 
     - name: Create or update a file with current timestamp
       run: |
@@ -35,8 +37,8 @@ jobs:
     - name: Commit and Push changes
       run: |
         git add daily_log.txt # Stage the changes to the log file
+        # Use an 'if' condition to only commit if there are changes
         git commit -m "Automated daily commit: Update daily_log.txt for $TIMESTAMP" || echo "No changes to commit"
         # The '|| echo "No changes to commit"' handles cases where the file might not have changed,
         # though our step above ensures it always does.
         git push # Push the commit to the repository
-
